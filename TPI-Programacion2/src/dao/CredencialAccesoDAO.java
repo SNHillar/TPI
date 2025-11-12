@@ -3,8 +3,14 @@ package dao;
 import java.util.List;
 import models.CredencialAcceso;
 
-public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
 
+public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
+    
+    
+    private static final UsuarioDAO usuarioDAO = new UsuarioDAO();
+    
+    
+    
     @Override
     public void insert(CredencialAcceso entidad) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -27,11 +33,6 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
 
     @Override
     public List<CredencialAcceso> findByAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void restore(int id) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

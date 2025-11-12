@@ -1,64 +1,125 @@
 package dao;
 
-import com.mysql.cj.xdevapi.Statement;
-import com.sun.jdi.connect.spi.Connection;
 import config.DatabaseConnection;
 import dao.GenericDAO;
 import java.util.List;
 import models.Usuario;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+// etc.
+// etc.
 
 public class UsuarioDAO implements GenericDAO<Usuario> {
-    
+
     private static final String INSERT_SQL = "INSERT INTO usuario (username, email) VALUES (?, ?)";
+
+    private static final String UPDATE_SQL = "UPDATE usuario SET username = ?, email = ?, WHERE id = ?";
     
-    private static final String UPDATE_SQL = "UPDATE usuario SET username = ?, email = ?, fecha_registro = ?, activo = ? WHERE id = ?";;
-            
     private static final String DELETE_SQL = "UPDATE usuario SET eliminado = TRUE WHERE id = ?";
-    
-    private static final String SELECT_BY_ID_SQL = "SELECT u.id, u.username, u.email, u.fecha_registro " +
-            "c.id AS cred_id, c.hash_password " +
-            "FROM usuario u LEFT JOIN credencial_acceso c ON c.user_id = u.id " +
-            "WHERE u.id = ? AND u.eliminado = FALSE";
-    
-    private static final String SELECT_BY_ALL = "SELECT u.id, u.username, u.email, u.fecha_registro " +
-            "c.id AS cred_id, c.hash_password " +
-            "FROM usuario u LEFT JOIN credencial_acceso c ON c.user_id = u.id " +
-            "WHERE u.eliminado = FALSE";
-    
-    
-    
+
+    private static final String SELECT_BY_ID_SQL = "SELECT u.id, u.username, u.email, u.fecha_registro "
+            + "c.id AS cred_id, c.hash_password "
+            + "FROM usuario u LEFT JOIN credencial_acceso c ON c.user_id = u.id "
+            + "WHERE u.id = ? AND u.eliminado = FALSE";
+
+    private static final String SELECT_BY_ALL = "SELECT u.id, u.username, u.email, u.fecha_registro "
+            + "c.id AS cred_id, c.hash_password "
+            + "FROM usuario u LEFT JOIN credencial_acceso c ON c.user_id = u.id "
+            + "WHERE u.eliminado = FALSE";
+
     @Override
-    public void insert(Usuario entidad) throws Exception {
-        try(Connection conn = DatabaseConnection.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement(INSERT_SQL);
-            
-            
+    public void insert(Usuario user) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            // captamos filas afectadas
+            int rowsAffected = stmt.executeUpdate();
+            // si no hay, no lo insertamos
+            if (rowsAffected == 0) {
+                throw new SQLException("No se pudo insertar el usuario.");
+            }
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int nuevoId = generatedKeys.getInt(1);
+                    user.setId(nuevoId);
+                } else {
+                    throw new SQLException("Se inserto el usuario, pero no se pudo recuperar el ID.");
+                }
+            } catch (SQLException e) {
+                System.out.println("Error en la creacion del usuario." + e.getMessage());
+                throw e;
+            }
         }
+        
+       }
+
+        @Override
+        public void update (Usuario entidad) throws SQLException {
+            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)){
+                stmt.setString(1, entidad.getUsername());
+                stmt.setString(2, entidad.getEmail());
+                stmt.executeUpdate();
+            } catch(SQLException e){
+                System.out.println("No se pudo actualizar el usuario" + e.getMessage());
+            }
+        }
+
+        @Override
+        public void delete(int id) throws SQLException {
+            
+            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
+                stmt.setInt(1, id);
+                int rowsAffected = stmt.executeUpdate();
+                if(rowsAffected == 0){
+                    throw new SQLException ("No se encontro a la persona con id: " + id);
+                }
+            }
+        }
+
+        @Override
+        public Usuario findById(int id) throws SQLException{
+            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID_SQL)){
+                stmt.setInt(1, id);
+                
+                try(ResultSet rs = stmt.executeQuery()){
+                    if (rs.next()) {
+                        return mapResultSetToUsuario(rs);
+                    }
+                }catch(SQLException e){
+                    System.out.println("No se encontro por id.");
+                }
+            } return null;
+        }
+
+        @Override
+        public List<Usuario> findByAll() {
+            
+            List<Usuario> usuarios = new ArrayList<>();
+            try(Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement()){
+                ResultSet rs = stmt.executeQuery(SELECT_BY_ALL);
+                while (rs.next()){
+                    usuarios.add(mapResultSetToUsuario(rs));
+                }
+            } catch (SQLException e){
+                System.out.println("No hay usuarios." + e.getMessage());
+            } return usuarios;
+        }
+        
+        
+        
+        private Usuario mapResultSetToUsuario(ResultSet rs) throws SQLException {
+            Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setUsername(rs.getString("nombre"));
+                usuario.setEmail(rs.getString("email"));
+            return usuario;
     }
 
-    @Override
-    public void update(Usuario entidad) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public void delete(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
-    @Override
-    public Usuario findById(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public List<Usuario> findByAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void restore(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-}
+    

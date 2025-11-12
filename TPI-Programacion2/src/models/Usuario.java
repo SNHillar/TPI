@@ -14,7 +14,7 @@ public class Usuario extends Base {
         this.email = email;
     }
 
-    protected Usuario() {
+    public Usuario() {
         super();
     }
 

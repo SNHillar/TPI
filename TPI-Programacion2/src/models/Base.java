@@ -2,10 +2,10 @@ package models;
 
 public abstract class Base {
 
-    private int id;
+    private long id;
     private boolean eliminado;
 
-    public Base(int id, boolean eliminado) {
+    public Base(long id, boolean eliminado) {
         this.id = id;
         this.eliminado = eliminado;
     }
@@ -17,7 +17,7 @@ public abstract class Base {
         this.eliminado = false;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -6,6 +6,7 @@ public class CredencialAcceso extends Base {
     private String salt;
     private String lastChange;
     private String requireReset;
+    private int userId;
 
     public CredencialAcceso(int id, boolean eliminado, String hashPassword) {
         super(id, false);
@@ -19,6 +20,12 @@ public class CredencialAcceso extends Base {
         super();
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    
+    
     public String getHashPassword() {
         return hashPassword;
     }

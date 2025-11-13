@@ -15,6 +15,8 @@ Asegúrate de tener instalado:
 * MySQL Server 8.0 (o el que usen)
 * Un IDE (IntelliJ, Eclipse, etc.)
 * El driver JDBC de MySQL (incluido en el repo o link para descargarlo)
+* HikariCP Pool: HikariCP-X.X.X.jar
+* SLF4J API: slf4j-api-X.X.X.jar
 
 * ### 2. Base de Datos 🛢️
 

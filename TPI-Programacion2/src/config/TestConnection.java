@@ -1,8 +1,8 @@
 package config;
 
-import com.mysql.cj.jdbc.PreparedStatementWrapper;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
+import config.DatabaseConnectionPool;
 import java.sql.SQLException;
 
 public class TestConnection {
@@ -17,7 +17,7 @@ public class TestConnection {
             System.out.println("Intentando obtener conexión...");
             
             // Usamos try-with-resources para que la conexión se cierre sola
-            try (Connection conn = DatabaseConnection.getConnection()) {
+            try (Connection conn = DatabaseConnectionPool.getConnection()) {
                 
                 // 2. Si llega aquí, la conexión fue exitosa
                 if (conn != null && conn.isValid(2)) { // conn.isValid(2) es un chequeo rápido (timeout de 2 seg)

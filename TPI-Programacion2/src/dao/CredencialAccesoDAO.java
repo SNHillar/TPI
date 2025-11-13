@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import config.DatabaseConnection;
+import config.DatabaseConnectionPool;
 import models.Usuario;
 
 
@@ -32,7 +32,7 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
     @Override
     public void insert(CredencialAcceso entidad) throws SQLException {
         
-        try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)){
+        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)){
             stmt.setString(1, entidad.getHashPassword());
             stmt.setString(2, entidad.getSalt());
             stmt.setInt(3, entidad.getUserId());

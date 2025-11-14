@@ -1,6 +1,6 @@
 # Proyecto Integrador: Programación 2 y Base de Datos I
 
-Este proyecto es una app en Java que gestiona usuarios y credenciales, conectándose a una base de datos MySQL.
+Este proyecto es una app en Java que gestiona usuarios y credenciales, conectándose a una base de datos MySQL usando un pool de conexiones (HikariCP).
 
 ---
 
@@ -8,17 +8,21 @@ Este proyecto es una app en Java que gestiona usuarios y credenciales, conectán
 
 Sigue estos pasos para poder ejecutar el proyecto en tu máquina local.
 
-### 1. Prerrequisitos
+### 1. Prerrequisitos y Librerías
 
 Asegúrate de tener instalado:
 * Java JDK 17 (o la versión que estén usando)
 * MySQL Server 8.0 (o el que usen)
-* Un IDE (IntelliJ, Eclipse, etc.)
-* El driver JDBC de MySQL (incluido en el repo o link para descargarlo)
-* HikariCP Pool: HikariCP-X.X.X.jar
-* SLF4J API: slf4j-api-X.X.X.jar
+* Un IDE (NetBeans, IntelliJ, Eclipse, etc.)
 
-* ### 2. Base de Datos 🛢️
+Además, debes agregar las siguientes librerías `.jar` al **Build Path** de tu proyecto:
+
+1.  **MySQL Connector/J:** El driver oficial de MySQL.
+2.  **HikariCP:** El pool de conexiones (ej. `HikariCP-5.1.0.jar`).
+3.  **SLF4J API:** Requerido por Hikari (ej. `slf4j-api-2.0.7.jar`).
+4.  **SLF4J Simple:** Opcional, pero recomendado para que Hikari muestre sus logs (ej. `slf4j-simple-2.0.7.jar`).
+
+### 2. Base de Datos 🛢️
 
 **IMPORTANTE:** El esquema de la base de datos se encuentra en el archivo `/sql/schema.sql`.
 
@@ -27,14 +31,19 @@ Asegúrate de tener instalado:
 3.  Selecciona la base de datos: `USE gestion_usuarios_2;`
 4.  Ejecuta el script `/sql/schema.sql` para crear las tablas (`usuario`, `credencial_acceso`) con todas sus restricciones.
 
-### 3. Configuración del Proyecto
+### 3. Configuración de Credenciales (¡El paso clave!)
+
+Este proyecto **NO** guarda las contraseñas en el código por seguridad (están en `.gitignore`). Para que la app funcione, debes crear tu propio archivo de configuración:
 
 1.  Clona este repositorio: `git clone https://github.com/SNHillar/TPI`
 2.  Abre el proyecto con tu IDE.
-3.  Asegúrate de que el driver JDBC de MySQL esté en el Build Path.
-4.  Verifica las credenciales de conexión en `config/DatabaseConnection.java`. 
+3.  En NetBeans, haz clic derecho sobre **`Source Packages`** > **`New`** > **`Other...`**.
+4.  Selecciona **`Other`** > **`Properties File`**.
+5.  Nombra el archivo **`db`** y haz clic en "Finish".
+6.  Pega el siguiente contenido en el `db.properties` que acabas de crear, **reemplazando con tus datos locales**:
 
-### 4. Ejecutar la Aplicación 🚀
-
-Para probar la conexión, ejecuta la clase `TestConexion.java`.
-Para iniciar la aplicación, ejecuta la clase `Main.java` (o la que sea).
+```properties
+# Credenciales de la Base de Datos Local
+db.url=jdbc:mysql://localhost:3306/gestion_usuarios_2
+db.user=root
+db.password=TU_CONTRASENIA_LOCAL

@@ -1,41 +1,35 @@
 package models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CredencialAcceso extends Base {
 
     private String hashPassword;
     private String salt;
-    private LocalDate lastChange;
+    private LocalDateTime ultimoCambio;
     private boolean requireReset;
-    private int userId;
 
-    public CredencialAcceso(int id, boolean eliminado, String hashPassword) {
+    public CredencialAcceso(String hashPassword, String salt, LocalDateTime ultimoCambio, boolean requireReset, long id, boolean eliminado) {
         super(id, false);
         this.hashPassword = hashPassword;
+        this.salt = salt;
+        this.ultimoCambio = ultimoCambio;
+        this.requireReset = requireReset;
     }
-    
+
     public CredencialAcceso() {
-        // es solo para el DAO
+        super(); // llama al constructor de Base (eliminado = false)
     }
+
+    
 
     /**
      * Constructor por defecto para crear una contraseña nueva sin ID.
      */
-    protected CredencialAcceso(int id, boolean eliminado) {
+    protected CredencialAcceso(long id, boolean eliminado) {
         super();
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    
-    
     public String getHashPassword() {
         return hashPassword;
     }
@@ -52,15 +46,15 @@ public class CredencialAcceso extends Base {
         this.salt = salt;
     }
 
-    public LocalDate getLastChange() {
-        return lastChange;
+    public LocalDateTime getUltimoCambio() {
+        return ultimoCambio;
     }
 
-    public void setLastChange(LocalDate lastChange) {
-        this.lastChange = lastChange;
+    public void setLastChange(LocalDateTime ultimoCambio) {
+        this.ultimoCambio = ultimoCambio;
     }
 
-    public boolean getRequireReset() {
+    public boolean isRequiereReset() {
         return requireReset;
     }
 
@@ -71,12 +65,12 @@ public class CredencialAcceso extends Base {
     @Override
     public String toString() {
         return "CredencialAcceso{" 
-                + "id= " + getId()
-                + "hashPassword=" + hashPassword
-                + ", salt=" + salt
-                + ", lastChange=" + lastChange
-                + ", requireReset=" + requireReset 
-                + "eliminado= " + isEliminado()
+                + "id = " + getId()
+                + "hashPassword = " + hashPassword
+                + ", salt = " + salt
+                + ", lastChange = " + ultimoCambio
+                + ", requireReset = " + requireReset 
+                + "eliminado = " + isEliminado()
                 + '}';
     }
 

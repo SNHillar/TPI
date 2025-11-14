@@ -14,6 +14,8 @@ import models.Usuario;
 
 public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
     
+    
+    
     private static final String INSERT_SQL = "INSERT INTO credencial_acceso (hash_password, salt, user_id) VALUES (?, ?, ?);"; // los otros atributos, tienen default en la base de datos
     
     private static final String UPDATE_SQL = "UPDATE credencial_acceso SET hash_password = ?, salt = ?, last_change = NOW(), require_reset = FALSE"
@@ -28,6 +30,9 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
             + " FROM credencial_acceso c"
             + " JOIN usuario u ON c.user_id = u.id"
             + " WHERE u.username = ? AND u.eliminado = FALSE";
+    
+    
+    
     
     @Override
     public void insert(CredencialAcceso entidad) throws SQLException {
@@ -122,4 +127,12 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
     public CredencialAcceso findByUsername(String username){
         return null;
     }
+    
+    private final CredencialAccesoDAO credencialAccesoDao;
+
+    public CredencialAccesoDAO() {
+        
+    }
+    
+    
 }

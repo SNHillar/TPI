@@ -30,16 +30,6 @@ public final class DatabaseConnectionPool {
      * Si falla, lanza ExceptionInInitializerError y detiene la aplicación. Esto
      * es intencional: sin BD correcta, la app no puede funcionar.
      */
-//    static {
-//        try {
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//            validateConfiguration();
-//        } catch (ClassNotFoundException e) {
-//            throw new ExceptionInInitializerError("Error: No se encontró el driver JDBC de MySQL" + e.getMessage());
-//        } catch (IllegalStateException e) {
-//            throw new ExceptionInInitializerError("Error en la configuración de la base de datos: " + e.getMessage());
-//        }
-//    }
     
     // armamos el pool de conexiones, con sus config de usuario, etc
     static{

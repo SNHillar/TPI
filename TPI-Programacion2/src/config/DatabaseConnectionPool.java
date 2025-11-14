@@ -5,14 +5,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.InputStream;
+import java.util.Properties;
 
 public final class DatabaseConnectionPool {
 
-    private final static String URL = System.getProperty("db.url", "jdbc:mysql://localhost:3306/gestion_usuarios_2");
+    private final static String URL;
 
-    private static final String USER = System.getProperty("db.user", "root");
+    private static final String USER;
 
-    private static final String PASSWORD = System.getProperty("db.password", "Nicolasheit_123");
+    private static final String PASSWORD;
 
     
     private static final HikariConfig config = new HikariConfig();
@@ -41,14 +43,35 @@ public final class DatabaseConnectionPool {
     
     // armamos el pool de conexiones, con sus config de usuario, etc
     static{
+        
+        Properties props = new Properties();
+        
+        try (InputStream input = DatabaseConnectionPool.class.getClassLoader().getResourceAsStream("db.properties")) {
+            
+            if (input == null) {
+                throw new IllegalStateException("Error: No se encontró el archivo db.properties");
+            }
+            
+            // Cargamos las propiedades desde el archivo
+            props.load(input);
+        
+        URL = props.getProperty("db.url");
+        USER = props.getProperty("db.user");
+        PASSWORD = props.getProperty("db.password");
+        
         config.setJdbcUrl(URL);
         config.setUsername(USER);
         config.setPassword(PASSWORD);
         config.setMaximumPoolSize(10);
         validateConfiguration();
         ds = new HikariDataSource(config);
+        
+        } catch (Exception e){
+            System.out.println("Error fatal al inicializar el pool de conexiones" +  e.getMessage());
+            e.printStackTrace();
+            throw new ExceptionInInitializerError(e);
+        }
     }
-
     /**
      * Constructor privado para prevenir instanciación. Esta es una clase
      * utilitaria con solo métodos estáticos.

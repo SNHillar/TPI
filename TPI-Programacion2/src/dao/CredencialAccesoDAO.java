@@ -56,7 +56,7 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
 
     @Override
     public void update(CredencialAcceso entidad) throws SQLException {
-        try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(UPDATE_SQL)){
+        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(UPDATE_SQL)){
             stmt.setString(1, entidad.getHashPassword());
             stmt.setString(2, entidad.getSalt());
             stmt.setInt(3, entidad.getUserId());
@@ -77,7 +77,7 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
     @Override
     public void delete(int id) throws SQLException {
         // se implementa el metodo para que compile, pero el Service no va a hacer uso porque lo maneja la BD.
-        try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
+        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
             stmt.setInt(1, id);
             
             int rowsAffected = stmt.executeUpdate();
@@ -94,7 +94,7 @@ public class CredencialAccesoDAO implements GenericDAO<CredencialAcceso>{
     @Override
     public CredencialAcceso findById(int id) throws SQLException {
         // no tiene funcionalidad pero implementamos porque es inofensivo el metodo, solo para cumplir contrato de interfaz
-        try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID)){
+        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID)){
             stmt.setInt(1, id);
             
             try(ResultSet rs = stmt.executeQuery()){

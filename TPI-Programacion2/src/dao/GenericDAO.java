@@ -17,6 +17,6 @@ public interface GenericDAO<T> {
 
     T findById(int id) throws Exception;
 
-    List<T> findByAll();
+    List<T> findByAll() throws Exception;
     
 }

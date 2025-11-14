@@ -1,16 +1,22 @@
 package models;
 
+import java.time.LocalDate;
+
 public class CredencialAcceso extends Base {
 
     private String hashPassword;
     private String salt;
-    private String lastChange;
-    private String requireReset;
+    private LocalDate lastChange;
+    private boolean requireReset;
     private int userId;
 
     public CredencialAcceso(int id, boolean eliminado, String hashPassword) {
         super(id, false);
         this.hashPassword = hashPassword;
+    }
+    
+    public CredencialAcceso() {
+        // es solo para el DAO
     }
 
     /**
@@ -22,6 +28,10 @@ public class CredencialAcceso extends Base {
 
     public int getUserId() {
         return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     
@@ -42,19 +52,19 @@ public class CredencialAcceso extends Base {
         this.salt = salt;
     }
 
-    public String getLastChange() {
+    public LocalDate getLastChange() {
         return lastChange;
     }
 
-    public void setLastChange(String lastChange) {
+    public void setLastChange(LocalDate lastChange) {
         this.lastChange = lastChange;
     }
 
-    public String getRequireReset() {
+    public boolean getRequireReset() {
         return requireReset;
     }
 
-    public void setRequireReset(String requireReset) {
+    public void setRequireReset(boolean requireReset) {
         this.requireReset = requireReset;
     }
 

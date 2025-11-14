@@ -1,6 +1,6 @@
 package dao;
 
-import config.DatabaseConnection;
+import config.DatabaseConnectionPool;
 import dao.GenericDAO;
 import java.util.List;
 import models.Usuario;
@@ -33,7 +33,7 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
 
     @Override
     public void insert(Usuario user) throws SQLException {
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             // captamos filas afectadas
@@ -59,7 +59,7 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
 
         @Override
         public void update (Usuario entidad) throws SQLException {
-            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)){
+            try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)){
                 stmt.setString(1, entidad.getUsername());
                 stmt.setString(2, entidad.getEmail());
                 stmt.executeUpdate();
@@ -71,7 +71,7 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
         @Override
         public void delete(int id) throws SQLException {
             
-            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
+            try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
                 stmt.setInt(1, id);
                 int rowsAffected = stmt.executeUpdate();
                 if(rowsAffected == 0){
@@ -82,7 +82,7 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
 
         @Override
         public Usuario findById(int id) throws SQLException{
-            try(Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID_SQL)){
+            try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID_SQL)){
                 stmt.setInt(1, id);
                 
                 try(ResultSet rs = stmt.executeQuery()){
@@ -99,7 +99,7 @@ public class UsuarioDAO implements GenericDAO<Usuario> {
         public List<Usuario> findByAll() {
             
             List<Usuario> usuarios = new ArrayList<>();
-            try(Connection conn = DatabaseConnection.getConnection(); Statement stmt = conn.createStatement()){
+            try(Connection conn = DatabaseConnectionPool.getConnection(); Statement stmt = conn.createStatement()){
                 ResultSet rs = stmt.executeQuery(SELECT_BY_ALL);
                 while (rs.next()){
                     usuarios.add(mapResultSetToUsuario(rs));

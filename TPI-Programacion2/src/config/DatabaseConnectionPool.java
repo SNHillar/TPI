@@ -1,10 +1,12 @@
 package config;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
-public final class DatabaseConnection {
+import java.sql.Connection;
+import java.sql.SQLException;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+public final class DatabaseConnectionPool {
 
     private final static String URL = System.getProperty("db.url", "jdbc:mysql://localhost:3306/gestion_usuarios_2");
 
@@ -12,6 +14,10 @@ public final class DatabaseConnection {
 
     private static final String PASSWORD = System.getProperty("db.password", "Nicolasheit_123");
 
+    
+    private static final HikariConfig config = new HikariConfig();
+
+    private static final HikariDataSource ds;
     /**
      * Bloque de inicialización estática. Se ejecuta UNA SOLA VEZ cuando la
      * clase se carga en memoria.
@@ -22,27 +28,37 @@ public final class DatabaseConnection {
      * Si falla, lanza ExceptionInInitializerError y detiene la aplicación. Esto
      * es intencional: sin BD correcta, la app no puede funcionar.
      */
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            validateConfiguration();
-        } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError("Error: No se encontró el driver JDBC de MySQL" + e.getMessage());
-        } catch (IllegalStateException e) {
-            throw new ExceptionInInitializerError("Error en la configuración de la base de datos: " + e.getMessage());
-        }
+//    static {
+//        try {
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//            validateConfiguration();
+//        } catch (ClassNotFoundException e) {
+//            throw new ExceptionInInitializerError("Error: No se encontró el driver JDBC de MySQL" + e.getMessage());
+//        } catch (IllegalStateException e) {
+//            throw new ExceptionInInitializerError("Error en la configuración de la base de datos: " + e.getMessage());
+//        }
+//    }
+    
+    // armamos el pool de conexiones, con sus config de usuario, etc
+    static{
+        config.setJdbcUrl(URL);
+        config.setUsername(USER);
+        config.setPassword(PASSWORD);
+        config.setMaximumPoolSize(10);
+        validateConfiguration();
+        ds = new HikariDataSource(config);
     }
 
     /**
      * Constructor privado para prevenir instanciación. Esta es una clase
      * utilitaria con solo métodos estáticos.
      */
-    private DatabaseConnection() {
+    private DatabaseConnectionPool() {
         throw new UnsupportedOperationException("Esta es una clase utilitaria y no debe ser instanciada");
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return ds.getConnection();
     }
     
     /**

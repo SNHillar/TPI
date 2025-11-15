@@ -1,23 +1,30 @@
 package models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Usuario extends Base {
 
     private String username;
     private String email;
     private boolean activo;
-    private String fechaRegistro;
+    private LocalDateTime fechaRegistro;
     private CredencialAcceso credencial;
 
-    public Usuario(int id, String username, String email) {
+ // Constructor principal
+    public Usuario(long id, String username, String email) {
         super(id, false);
         this.username = username;
         this.email = email;
     }
 
+// Constructor vacío (necesario para DAO)
     public Usuario() {
         super();
     }
 
+    
+ // Getters y setters
     public String getUsername() {
         return username;
     }
@@ -42,26 +49,34 @@ public class Usuario extends Base {
         this.activo = activo;
     }
 
-    public String getFechaRegistro() {
+    public LocalDateTime  getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(String fechaRegistro) {
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-    
-    
 
+    public CredencialAcceso getCredencial() {
+        return credencial;
+    }
+
+    public void setCredencial(CredencialAcceso credencial) {
+        this.credencial = credencial;
+    }
+    
     @Override
     public String toString() {
         return "Usuario{" 
-                + "id= " + getId()
-                + "username=" + username
-                + ", email=" + email
-                + ", activo=" + activo
-                + ", fechaRegistro=" + fechaRegistro 
-                + "eliminado= " + isEliminado()
+                + "id = " + getId()
+                + "username = " + username
+                + ", email = " + email
+                + ", activo = " + activo
+                + ", fechaRegistro = " + fechaRegistro 
+                + "eliminado = " + isEliminado()
+                + ", credencial = " + (credencial != null ? credencial.getId() : "null")
                 + '}';
     }
+
 
 }

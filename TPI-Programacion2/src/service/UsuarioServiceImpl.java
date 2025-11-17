@@ -1,25 +1,30 @@
 package service;
 
-import dao.GenericDAO;
+import config.DatabaseConnectionPool;
+import dao.CredencialAccesoDAO;
+import dao.UsuarioDAO;
 import java.util.Collections;
 import java.util.List;
 import models.CredencialAcceso;
 import models.Usuario;
 import org.mindrot.jbcrypt.BCrypt;
+import java.sql.Connection;
+import java.sql.SQLException;
 
-public class UsuarioServiceImpl implements GenericService<Usuario> {
+public class UsuarioServiceImpl implements UsuarioService {
 
-    private final GenericDAO<Usuario> usuarioDao;
+    private final UsuarioDAO usuarioDao;
     
-    private final GenericDAO<CredencialAcceso> credencialAccesoDao;
+    private final CredencialAccesoDAO credencialAccesoDao;
     
     
 
-    public UsuarioServiceImpl(GenericDAO<Usuario> usuarioDao, GenericDAO<CredencialAcceso> credencialAccesoDao) {
+    public UsuarioServiceImpl(UsuarioDAO usuarioDao, CredencialAccesoDAO credencialAccesoDao) {
         this.usuarioDao = usuarioDao;
         
         this.credencialAccesoDao = credencialAccesoDao;
     }
+    
 
     @Override
     public void insert(Usuario entidad) throws Exception {
@@ -49,7 +54,7 @@ public class UsuarioServiceImpl implements GenericService<Usuario> {
     }
 
     @Override
-    public void delete(int id) throws Exception {
+    public void delete(long id) throws Exception {
         if(id < 0){
             throw new IllegalArgumentException("No se puede buscar un ID negativo.");
         }
@@ -57,7 +62,7 @@ public class UsuarioServiceImpl implements GenericService<Usuario> {
     }
 
     @Override
-    public Usuario findById(int id) throws Exception {
+    public Usuario findById(long id) throws Exception {
         if(id < 0){
             throw new IllegalArgumentException("No se puede buscar un ID negativo.");
         }
@@ -69,22 +74,48 @@ public class UsuarioServiceImpl implements GenericService<Usuario> {
         return Collections.unmodifiableList(usuarioDao.findByAll());
     }
     
-    public void registrarUsuario (Usuario username, String passwordPlano) throws Exception{
-        if(username.getUsername() == null || username.getUsername().trim().isEmpty()){
+    @Override
+    public void registrarUsuario (Usuario user, String passwordPlano) throws SQLException{
+        if(user.getUsername() == null || user.getUsername().trim().isEmpty()){
             throw new IllegalArgumentException("El nombre de usuario no puede estar nulo ni vacio.");
         }
-        if(password.getHashPassword() == null || password.getHashPassword().trim().isEmpty()){
-            throw new IllegalArgumentException("El password no puede estar nulo ni vacio.");
+        if(passwordPlano == null || passwordPlano.length() < 8){
+            throw new IllegalArgumentException("El password no puede estar nulo y debe contener al menos 8 digitos.");
         }
         
+        String newSalt = BCrypt.gensalt();
+        String newHash = BCrypt.hashpw(passwordPlano, newSalt);
         
+        CredencialAcceso credencial = new CredencialAcceso();
+        credencial.setSalt(newSalt);
+        credencial.setHashPassword(newHash);
         
-        usuarioDao.insert(username);
-        
-        // asociamos la credencial al usuario creado
-        password.setUserId(username.getId());
-        credencialAccesoDao.insert(password);
-        
-        System.out.println("Usuario ingresado con exito!");
+        Connection conn = null;
+        try {
+            conn = DatabaseConnectionPool.getConnection();
+            conn.setAutoCommit(false);
+            
+            // DAO del user inserta al usuario
+            usuarioDao.insert(conn, user);
+            
+            //DAO de credencial insert credencial
+            credencial.setUserId(user.getId());
+            credencialAccesoDao.insert(conn, credencial);
+            
+            conn.commit();
+            
+        } catch (SQLException e) {
+            // si algo falla, hacemos rollback, tratamos las transacciones como atomicas
+            if(conn != null){
+                conn.rollback();
+            }
+            System.out.println("Error al registrar al usuario." + e.getMessage());
+            throw e;
+        }finally{
+            if(conn != null){
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
     }
 }

@@ -8,9 +8,9 @@ public interface GenericService<T>{
     
     void update(T entidad) throws Exception;
     
-    void delete(int id) throws Exception;
+    void delete(long id) throws Exception;
 
-    T findById(int id) throws Exception;
+    T findById(long id) throws Exception;
 
     List<T> findByAll() throws Exception;
     

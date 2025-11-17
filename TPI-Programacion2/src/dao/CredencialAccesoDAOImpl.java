@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import config.DatabaseConnectionPool;
-import models.Usuario;
 
 
 public class CredencialAccesoDAOImpl implements CredencialAccesoDAO{
@@ -36,28 +35,39 @@ public class CredencialAccesoDAOImpl implements CredencialAccesoDAO{
             + " JOIN usuario u ON c.user_id = u.id"
             + " WHERE u.username = ? AND u.eliminado = FALSE";
     
-    
+    @Override
+    public void insert(Connection conn, CredencialAcceso entidad) throws SQLException{
+        
+        try(PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)){
+            
+            stmt.setString(1, entidad.getHashPassword());
+            stmt.setString(2, entidad.getSalt());
+            stmt.setLong(3, entidad.getUserId());
+            int rowsAffected = stmt.executeUpdate();
+            
+            if(rowsAffected == 0){
+                throw new SQLException ("Fallo la insercion de la credencial, 0 filas afectadas.");
+            }
+            
+            try(ResultSet keys = stmt.getGeneratedKeys()){
+                
+                if(keys.next()){
+                    entidad.setId(keys.getInt(1));
+                    
+                } else {
+                    throw new SQLException ("Se inserto la credencial, pero no se pudo obtener el id.");
+                }
+        }
+    }
+    }
     
     
     @Override
     public void insert(CredencialAcceso entidad) throws SQLException {
         
-        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)){
-            stmt.setString(1, entidad.getHashPassword());
-            stmt.setString(2, entidad.getSalt());
-            stmt.setLong(3, entidad.getUserId());
+        try(Connection conn = DatabaseConnectionPool.getConnection()){
+            this.insert(conn, entidad);
             
-            int rowsAffected = stmt.executeUpdate();
-            if(rowsAffected == 0){
-                throw new SQLException ("Fallo la insercion de la credencial, 0 filas afectadas.");
-            }
-            try(ResultSet keys = stmt.getGeneratedKeys()){
-                if(keys.next()){
-                    entidad.setId(keys.getInt(1));
-                } else {
-                    throw new SQLException ("Se inserto la credencial, pero no se pudo obtener el id.");
-                }
-            }
         } catch (SQLException e){
             System.out.println("Error en CredencialAccesoDAO.insert(): " + e.getMessage());
             throw e;
@@ -85,10 +95,10 @@ public class CredencialAccesoDAOImpl implements CredencialAccesoDAO{
     
     // utilizamos ON DELETE CASCADE en la base de datos, si se borra un usuario, se borra su credencial
     @Override
-    public void delete(int id) throws SQLException {
+    public void delete(long id) throws SQLException {
         // se implementa el metodo para que compile, pero el Service no va a hacer uso porque lo maneja la BD.
         try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)){
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             
             int rowsAffected = stmt.executeUpdate();
             

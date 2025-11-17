@@ -1,7 +1,6 @@
 package dao;
 
 import config.DatabaseConnectionPool;
-import dao.GenericDAO;
 import java.util.List;
 import models.Usuario;
 import java.sql.PreparedStatement;
@@ -20,6 +19,10 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     private static final String UPDATE_SQL = "UPDATE usuario SET username = ?, email = ?, WHERE id = ?";
 
     private static final String DELETE_SQL = "UPDATE usuario SET eliminado = TRUE WHERE id = ?";
+    
+    private static final String RESTORE_SQL = "UPDATE usuario SET eliminado = FALSE WHERE id = ?";
+    
+    private static final String SELECT_BY_EMAIL_SQL = "SELECT * FROM usuario WHERE email = ? AND eliminado = FALSE";
 
     private static final String SELECT_BY_ID_SQL = "SELECT u.id, u.username, u.email, u.fecha_registro, u.activo, u.eliminado, "
            + "c.id AS cred_id, c.hash_password "
@@ -142,7 +145,46 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
         return usuarios;
     }
+    
+    @Override
+    public Usuario findByEmail (String email) throws SQLException{
+        try(Connection conn = DatabaseConnectionPool.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_BY_EMAIL_SQL)){
+            stmt.setString(1, email);
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()){
+                    return mapResultSetToUsuario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error en UsuarioDAO.findByEmail(): " + e.getMessage());
+            throw e;
+        }
+        return null;
+    }
 
+    @Override
+     public void restore(Connection conn, long id) throws SQLException {
+
+        try (PreparedStatement stmt = conn.prepareStatement(RESTORE_SQL)) {
+            stmt.setLong(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No se encontro a la persona con id: " + id);
+            }
+        }
+    }
+     
+     
+    @Override
+    public void restore(long id) throws SQLException {
+    try (Connection conn = DatabaseConnectionPool.getConnection()) {
+        this.restore(conn, id);
+    } catch (SQLException e) {
+        System.out.println("Error en UsuarioDAO.restore(simple): " + e.getMessage());
+        throw e;
+    }
+}
+    
     private Usuario mapResultSetToUsuario(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));
@@ -152,5 +194,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         usuario.setEliminado(rs.getBoolean("eliminado"));
         return usuario;
     }
+
+    
 
 }

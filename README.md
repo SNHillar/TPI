@@ -20,7 +20,7 @@ Además, debes agregar las siguientes librerías `.jar` al **Build Path** de tu 
 1.  **MySQL Connector/J:** El driver oficial de MySQL.
 2.  **HikariCP:** El pool de conexiones (ej. `HikariCP-5.1.0.jar`).
 3.  **SLF4J API:** Requerido por Hikari (ej. `slf4j-api-2.0.7.jar`).
-4.  **SLF4J Simple:** Opcional, pero recomendado para que Hikari muestre sus logs (ej. `slf4j-simple-2.0.7.jar`).
+4.  **jbcrypt:** Para el hashing de contraseñas (ej. `jbcrypt-0.4.jar`).
 
 ### 2. Base de Datos 🛢️
 

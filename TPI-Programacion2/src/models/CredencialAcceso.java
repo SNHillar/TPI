@@ -8,6 +8,7 @@ public class CredencialAcceso extends Base {
     private String salt;
     private LocalDateTime ultimoCambio;
     private boolean requireReset;
+    private long userId;
 
     public CredencialAcceso(String hashPassword, String salt, LocalDateTime ultimoCambio, boolean requireReset, long id, boolean eliminado) {
         super(id, false);
@@ -21,7 +22,15 @@ public class CredencialAcceso extends Base {
         super(); // llama al constructor de Base (eliminado = false)
     }
 
+    public long getUserId() {
+        return userId;
+    }
     
+    
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     /**
      * Constructor por defecto para crear una contraseña nueva sin ID.

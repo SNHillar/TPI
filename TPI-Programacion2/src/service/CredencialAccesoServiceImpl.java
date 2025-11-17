@@ -9,7 +9,7 @@ import models.CredencialAcceso;
 import models.Usuario;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class CredencialAccesoServiceImpl implements GenericService<CredencialAcceso> {
+public class CredencialAccesoServiceImpl implements CredencialAccesoService {
 
     // instanciamos un DAO
     private final CredencialAccesoDAO credencialAccesoDao;
@@ -37,7 +37,7 @@ public class CredencialAccesoServiceImpl implements GenericService<CredencialAcc
     }
 
     @Override
-    public void delete(int id) throws Exception {
+    public void delete(long id) throws Exception {
         if(id < 0){
             throw new IllegalArgumentException("No se puede eliminar con un id negativo");
         }
@@ -45,7 +45,7 @@ public class CredencialAccesoServiceImpl implements GenericService<CredencialAcc
     }
 
     @Override
-    public CredencialAcceso findById(int id) throws Exception {
+    public CredencialAcceso findById(long id) throws Exception {
         return credencialAccesoDao.findById(id);
     }
 
@@ -66,7 +66,7 @@ public class CredencialAccesoServiceImpl implements GenericService<CredencialAcc
         }
     }
     
-    
+    @Override
     public Usuario login (String username, String passwordPlano) throws Exception{
         
         if(username == null || passwordPlano == null || username.trim().isEmpty() || passwordPlano.trim().isEmpty()){
@@ -86,6 +86,7 @@ public class CredencialAccesoServiceImpl implements GenericService<CredencialAcc
         return usuarioDao.findById(credencial.getUserId());
     }
     
+    @Override
     public void changePassword (long userId, String newPassword) throws Exception{
         
         if(newPassword == null || newPassword.trim().length() < 8){

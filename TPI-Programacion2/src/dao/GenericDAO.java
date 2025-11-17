@@ -1,7 +1,6 @@
 package dao;
 
 import java.util.List;
-import java.sql.Connection;
 
 
 
@@ -13,7 +12,7 @@ public interface GenericDAO<T> {
 
     void update(T entidad) throws Exception;
 
-    void delete(int id) throws Exception;
+    void delete(long id) throws Exception;
 
     T findById(long id) throws Exception;
 

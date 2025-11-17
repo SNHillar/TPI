@@ -14,5 +14,7 @@ public interface UsuarioService extends GenericService<Usuario>{
     
     void registrarUsuario(Usuario user, String passwordPlano) throws Exception;
     
+    public Usuario findByEmail(String email) throws Exception;
     
+    void restore(long id) throws Exception;
 }

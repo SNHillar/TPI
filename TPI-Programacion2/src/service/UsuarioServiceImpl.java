@@ -60,6 +60,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         usuarioDao.delete(id);
     }
+    @Override
+    public void restore(long id) throws Exception{
+        if(id < 0){
+            throw new IllegalArgumentException("No se puede buscar un id menor a 1.");
+        }
+        usuarioDao.restore(id);
+    }
+    
 
     @Override
     public Usuario findById(long id) throws Exception {
@@ -73,6 +81,17 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> findByAll() throws Exception {
         return Collections.unmodifiableList(usuarioDao.findByAll());
     }
+    
+    @Override
+    public Usuario findByEmail(String email) throws Exception {
+    // 1. Lógica de Negocio (Validación)
+    if (email == null || !email.contains("@")) {
+        throw new IllegalArgumentException("El formato del email es inválido.");
+    }
+    
+    // 2. Llama al "Obrero"
+    return usuarioDao.findByEmail(email);
+}
     
     @Override
     public void registrarUsuario (Usuario user, String passwordPlano) throws SQLException{

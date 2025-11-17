@@ -38,10 +38,10 @@ public class AppMenu {
                 case "4" -> listarUsuarios();
                 case "5" -> actualizarUsuario();
                 case "6" -> eliminarUsuario();
-//                case "6" -> restaurarUsuario();
-//                case "7" -> buscarPorEmail(); // búsqueda adicional
+                case "7" -> findByEmail();
+                case "8" -> restoreUser();
                 case "0" -> System.out.println("Saliendo del sistema...");
-                default -> System.out.println("⚠ Opcion inválida.");
+                default -> System.out.println("Opcion inválida.");
             }
 
         } while (!opcion.equals("0"));
@@ -55,7 +55,8 @@ public class AppMenu {
         System.out.println("4) Listar usuarios");
         System.out.println("5) Actualizar usuario");
         System.out.println("6) Eliminar usuario");
-//        System.out.println("7) Buscar por EMAIL (campo relevante)");
+        System.out.println("7) Buscar por EMAIL (campo relevante)");
+        System.out.println("8) Restaurar usuario");
         System.out.println("0) Salir");
         System.out.print("Seleccione una opción: ");
     }
@@ -110,17 +111,17 @@ public class AppMenu {
 
             Usuario u = usuarioService.findById(id);
             if (u == null) {
-                System.out.println("❌ No existe usuario con ese ID.");
+                System.out.println("No existe usuario con ese ID.");
             } else {
-                System.out.println("✔ Usuario encontrado:");
+                System.out.println("Usuario encontrado:");
                 System.out.println(u);
                 System.out.println("Credencial: " + u.getCredencial());
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("⚠ ID invalido.");
+            System.out.println("ID invalido.");
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -129,12 +130,12 @@ public class AppMenu {
         try {
             var lista = usuarioService.findByAll();
             if (lista.isEmpty()) {
-                System.out.println("⚠ No hay usuarios disponibles.");
+                System.out.println("No hay usuarios disponibles.");
             } else {
                 lista.forEach(System.out::println);
             }
         } catch (Exception e) {
-            System.out.println("❌ Error al listar: " + e.getMessage());
+            System.out.println("Error al listar: " + e.getMessage());
         }
     }
 
@@ -146,7 +147,7 @@ public class AppMenu {
 
             Usuario u = usuarioService.findById(id);
             if (u == null) {
-                System.out.println("❌ No existe ese usuario.");
+                System.out.println("No existe ese usuario.");
                 return;
             }
 
@@ -161,10 +162,10 @@ public class AppMenu {
 
             usuarioService.update(u);
 
-            System.out.println("✔ Usuario actualizado.");
+            System.out.println("Usuario actualizado.");
 
         } catch (Exception e) {
-            System.out.println("❌ Error al actualizar: " + e.getMessage());
+            System.out.println("Error al actualizar: " + e.getMessage());
         }
     }
 
@@ -176,10 +177,10 @@ public class AppMenu {
 
             usuarioService.delete(id);
 
-            System.out.println("✔ Usuario eliminado logicamente.");
+            System.out.println("Usuario eliminado logicamente.");
 
         } catch (Exception e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -187,39 +188,39 @@ public class AppMenu {
     // TO DO:
     
     
-//    // RESTAURAR
-//    private void restaurarUsuario() {
-//        try {
-//            System.out.print("ID a restaurar: ");
-//            Long id = Long.parseLong(sc.nextLine());
-//
-//            usuarioService.restaurar(id);
-//
-//            System.out.println("✔ Usuario restaurado.");
-//
-//        } catch (Exception e) {
-//            System.out.println("❌ Error: " + e.getMessage());
-//        }
-//    }
+    // RESTAURAR
+    private void restoreUser() {
+        try {
+            System.out.print("ID a restaurar: ");
+            long id = Long.parseLong(sc.nextLine());
 
-//    // BÚSQUEDA POR CAMPO RELEVANTE (EMAIL)
-//    private void buscarPorEmail() {
-//        try {
-//            System.out.print("Ingrese email a buscar: ");
-//            String email = sc.nextLine();
-//
-//            var resultado = usuarioService.buscarPorEmail(email);
-//
-//            if (resultado == null) {
-//                System.out.println("❌ No se encontró usuario con ese email.");
-//            } else {
-//                System.out.println("✔ Usuario encontrado:");
-//                System.out.println(resultado);
-//            }
-//
-//        } catch (Exception e) {
-//            System.out.println("❌ Error en búsqueda: " + e.getMessage());
-//        }
-//    }  
+            usuarioService.restore(id);
+
+            System.out.println("Usuario restaurado.");
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    // BÚSQUEDA POR CAMPO RELEVANTE (EMAIL)
+    private void findByEmail() {
+        try {
+            System.out.print("Ingrese email a buscar: ");
+            String email = sc.nextLine();
+
+            var resultado = usuarioService.findByEmail(email);
+
+            if (resultado == null) {
+                System.out.println("No se encontró usuario con ese email.");
+            } else {
+                System.out.println("Usuario encontrado:");
+                System.out.println(resultado);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error en búsqueda: " + e.getMessage());
+        }
+    }  
 //    
 }

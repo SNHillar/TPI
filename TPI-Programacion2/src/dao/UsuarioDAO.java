@@ -7,5 +7,12 @@ import java.sql.SQLException;
 
 
 public interface UsuarioDAO extends GenericDAO<Usuario>{
-    public void insert(Connection conn, Usuario user) throws SQLException;
+    
+    void insert(Connection conn, Usuario user) throws SQLException;
+    
+    Usuario findByEmail(String email) throws SQLException;
+    
+    void restore(Connection conn, long id) throws SQLException;
+    
+    void restore(long id) throws SQLException;
 }
